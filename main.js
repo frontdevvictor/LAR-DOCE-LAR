@@ -97,3 +97,53 @@ const metalicMaterial = new THREE.MeshStandardMaterial({
     map: bakedMaterial,
     side: THREE.DoubleSide,
 })
+
+//Loader 
+const loader = new THREE.GLTFLoader()
+
+loader.load('https://rawcdn.githack.com/ricardoolivaalonso/ThreeJS-Room12/cecbd1c77333b3c9ee23bb1eb41dee395e14ca3e/dist/model.glb',
+    (gltf) => {
+        const model = gltf.scene 
+        model.traverse( child => {
+            child.material = metalicMaterial
+            child.material.roughness = 0
+        })
+        scene.add(model)
+        //loading.style.display = 'none
+    },
+    ( xhr ) => {
+        console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+    }
+)
+
+
+window.addEventListener('resize', () => 
+{
+    sizes.widht = window.innerWidth
+    sizes.height = window.innerHeight
+    camera.aspect = sizes.widht / sizes.height
+    camera.updateProjectionMatrix()
+    renderer.setSize(sizes.widht, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
+// Animation
+
+let rmapped = 0
+let minPan = new THREE.Vector3( -2, -.5, -2 )
+let maxPan = new THREE.Vector3( 2, .5, 2)
+
+const tick = () => {
+    controls.update()
+    controls.target.clamp( minPan, maxPan )
+    controls.target.clamp( minPan, maxPan )
+    renderer.render(scene, camera)
+    window.requestAnimationFrame(tick)
+
+    let h = rmapped * 0.0025 % 1
+    let s = 0.5
+    let l = 0.5
+    // rectLight.color.setHSL ( h, s, l )
+    // rmapped ++
+}
+
+tick()
